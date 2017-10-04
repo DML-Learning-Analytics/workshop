@@ -4,8 +4,23 @@
 DF1 <- read.csv("LA_wrkshp_survey.csv", header = TRUE)
 View(DF1)
 ```
-#Visualize Locations
-```{r}
+##Visualize Patterns
+```{r, warning=FALSE}
+install.packages("ggplot2")
+install.packages("tidyr")
+install.packages("dplyr")
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+DF1b <- DF1[,c(12:30)]
+DF1c <- gather(DF1b, item, score)
+
+qplot(score, data=DF1c, geom="bar") + facet_wrap( ~ item)
+
+```
+##Visualize Locations
+```{r, warning=FALSE}
 install.packages("maps")
 install.packages("ggmap")
 library(maps)
@@ -18,29 +33,24 @@ LL <- geocode(as.character(DF1$city), output = "latlon")
 DF1 <- cbind(DF1,LL)
 
 ```
-#Visualize world map
+##Visualize world map
 ```{r}
 map("world")
 #Visualize different projections
 map("world", projection = "sinusoidal")
 map("world", projection = "cylindrical")
 ```
-#Plot workshop participants
+##Plot workshop participants
 ```{r}
 map("world")
 points(DF1$lon, DF1$lat, col=4, pch=19, cex=2)
 ```
-#Visualize different orientation
+##Visualize different orientation
 ```{r, warning=FALSE}
 map("world", orientation = c(174.7633315,-36.84846,180), projection = "mercator")
 ```
-#Social Network Analysis Processing
+##Social Network Analysis Processing
 ```{r, warning=FALSE}
-install.packages("tidyr")
-install.packages("dplyr")
-library(tidyr)
-library(dplyr)
-
 #Load data
 DF2 <- read.csv("LA_wrkshp_sessions.csv", header = TRUE)
 DF2 <- gather(DF2, date, session, 2:12)
@@ -59,7 +69,7 @@ diag(DF3) <- NA
 DF4 <- t(DF2) %*% as.matrix(DF2)
 diag(DF4) <- NA
 ```
-#Plot graph
+##Plot graph
 ```{r, warning=FALSE}
 install.packages("igraph")
 library(igraph)
