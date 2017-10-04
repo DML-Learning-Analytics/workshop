@@ -66,12 +66,12 @@ library(igraph)
 g1 <- graph.adjacency(DF3, mode = "undirected")
 plot(g1,edge.width = 0.25)
 
-betweenness(g1)
+G1B <- as.data.frame(betweenness(g1))
 
 g2 <- graph.adjacency(DF4, mode = "undirected")
 V(g2)$label.cex = 0.5
 plot(g2, edge.width = 0.25)
 
-betweenness(g2)
+G2B <- as.data.frame(betweenness(g2))
 ```
 
