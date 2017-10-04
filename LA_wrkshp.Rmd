@@ -1,0 +1,77 @@
+#Workshop Activity
+```{r}
+#Load data
+DF1 <- read.csv("LA_wrkshp_survey.csv", header = TRUE)
+View(DF1)
+```
+#Visualize Locations
+```{r}
+install.packages("maps")
+install.packages("ggmap")
+library(maps)
+library(ggmap)
+
+#Request lattitude and longitude from Google Maps API
+LL <- geocode(as.character(DF1$city), output = "latlon")
+
+#Join longitude and lattitude to DF1
+DF1 <- cbind(DF1,LL)
+
+```
+#Visualize world map
+```{r}
+map("world")
+#Visualize different projections
+map("world", projection = "sinusoidal")
+map("world", projection = "cylindrical")
+```
+#Plot workshop participants
+```{r}
+map("world")
+points(DF1$lon, DF1$lat, col=4, pch=19, cex=2)
+```
+#Visualize different orientation
+```{r, warning=FALSE}
+map("world", orientation = c(174.7633315,-36.84846,180), projection = "mercator")
+```
+#Social Network Analysis Processing
+```{r, warning=FALSE}
+install.packages("tidyr")
+install.packages("dplyr")
+library(tidyr)
+library(dplyr)
+
+#Load data
+DF2 <- read.csv("LA_wrkshp_sessions.csv", header = TRUE)
+DF2 <- gather(DF2, date, session, 2:12)
+DF2$session <- ifelse(DF2$session == 0, NA, ifelse(DF2$session == "", NA, DF2$session))
+DF2$session <- strtrim(DF2$session, 15)
+DF2 <- na.omit(DF2)
+DF2 <- DF2[,c(1,3)]
+DF2 <- unique(DF2)
+DF2$count <- 1
+DF2 <- spread(DF2, session, count)
+row.names(DF2) <- DF2$first
+DF2 <- DF2[,c(2:43)]
+DF2[is.na(DF2)] <- 0
+DF3 <- as.matrix(DF2) %*% t(DF2)
+diag(DF3) <- NA
+DF4 <- t(DF2) %*% as.matrix(DF2)
+diag(DF4) <- NA
+```
+#Plot graph
+```{r, warning=FALSE}
+install.packages("igraph")
+library(igraph)
+g1 <- graph.adjacency(DF3, mode = "undirected")
+plot(g1,edge.width = 0.25)
+
+betweenness(g1)
+
+g2 <- graph.adjacency(DF4, mode = "undirected")
+V(g2)$label.cex = 0.5
+plot(g2, edge.width = 0.25)
+
+betweenness(g2)
+```
+
